@@ -20,7 +20,6 @@ start(_StartType, _StartArgs) ->
     database:init_database(),
 
     Res = erlbank_flex_accounts_sup:start_link(),
-    lager:info("Started account feed: ~p~n", [node()]),
     Res.
 
 
