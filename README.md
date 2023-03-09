@@ -36,7 +36,7 @@ If `Type` is `new_account_event`, `Content` is a tuple
 
 where `AccountNumber` is a unique integer, `PersonId` refers to a
 `new_person_event` event, and `InitialBalance` is a number denoting
-the initial account balance.
+the initial account balance in €.
 
 These events are served from the `account_feed` process via a call
 like so:
