@@ -39,10 +39,11 @@ get_all_events(Type) ->
 
 -spec get_events_from(non_neg_integer()) -> list(#event{}).
 get_events_from(Index) ->
-    dets:select(event, [{'$1',
-                        [{'>=', {element, #event.index, '$1'}, Index}],
-                        ['$_']}]).
-
+    Events = dets:select(event, [{'$1',
+                                 [{'>=', {element, #event.index, '$1'}, Index}],
+                                 ['$_']}]),
+    lists:sort(fun (#event{index = Index1}, #event{index = Index2}) -> Index1 =< Index2 end, Events).
+ 
 -spec next_event_index() -> non_neg_integer().
 next_event_index() -> dets:update_counter(table_id, event, 1).
 

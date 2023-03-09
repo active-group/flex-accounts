@@ -3,6 +3,52 @@
 Service to create bank accounts.
 
 
+## Events interface
+
+On the Erlang node this service runs on, there is a `gen_server`
+process in the local registry called `account_feed`.  This serves
+events in the following format:
+
+```
+{event, Index, Type, Content}
+```
+
+- `Index` is a non-negative integer, by which events are ordered in
+  time
+- `Type` is either `new_account_event` or `new_person_event`
+- `Content` depends on `Type`
+
+If `Type` is `new_person_event`, `Content` is a tuple 
+
+```
+{PersonId, GivenName, Surname}
+```
+
+Where `PersonId` is a unique integer, `GivenName` and `Surname` are
+binaries encoding the name components.
+
+
+If `Type` is `new_account_event`, `Content` is a tuple 
+
+```
+{AccountNumber, PersonId, InitialBalance}
+```
+
+where `AccountNumber` is a unique integer, `PersonId` refers to a
+`new_person_event` event, and `InitialBalance` is a number denoting
+the initial account balance.
+
+These events are served from the `account_feed` process via a call
+like so:
+
+```
+gen_server:call(account_feed, {events, From})
+```
+
+This returns a list of all available event tuples starting with the
+`From` index, in ascending order.  (Or the the least index higher than
+`From` - specifying 0 here fetches *all* events.)
+
 ## Build
 
 ```
