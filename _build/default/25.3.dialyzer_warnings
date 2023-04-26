@@ -1,0 +1,18 @@
+d:/Projects/Erlang/flex-accounts/src/client.erl:12:1: Function name_by_account_number/1 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:30:1: Function bin_to_int/1 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:35:1: Function amount_to_string/3 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:44:1: Function name_by_account_number/1 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:51:1: Function name_by_account/1 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:55:1: Function head_template/0 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:67:1: Function back_button/0 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:70:1: Function footer_template/0 will never be called
+
+d:/Projects/Erlang/flex-accounts/src/web_frontend.erl:75:1: Function head/3 will never be called
+
