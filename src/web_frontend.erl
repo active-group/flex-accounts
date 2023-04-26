@@ -26,58 +26,6 @@ account_open_form() ->
 </form>" >>.
 
 
--spec bin_to_int(binary()) -> integer().
-bin_to_int(B) ->
-    erlang:list_to_integer(binary:bin_to_list(B)).
-
-
--spec amount_to_string(money(), string(), number_formatter:locale()) -> string().
-amount_to_string(Amount, Currency, Format) ->
-    {ok, AmountExchanged} = exchange_service:exchange(Currency, Amount),
-    AmountFormatted = number_formatter:format(Format, AmountExchanged),
-    AmountFormatted ++ " " ++ Currency.
-
-
-%% returns the name of the person associated to the account nr
-%% given by account number.
--spec name_by_account_number(unique_id()) -> string().
-name_by_account_number(AccountNumber) ->
-    {ok, Account} = business_logic:get_account(AccountNumber),
-    name_by_account(Account).
-
-%% returns the name of the person associated to the account
-%% given by account.
--spec name_by_account(#account{}) -> string().
-name_by_account(Account) ->
-    {ok, Person}  = business_logic:get_person(Account#account.person_id),
-    io_lib:format("~s ~s", [Person#person.given_name, Person#person.surname]).
- 
-head_template() ->
-    "<p> Name: ~s </p>
-     <p> Balance: ~s </p>
-     <table>
-      <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>Amount</th>
-        <th>Sender</th>
-        <th>Receiver</th>
-      </tr> ".
-
-back_button() ->
-    "<a href=\"/\">Back </a>".
-
-footer_template() ->
-    "</table>" ++ back_button().
-
-
--spec head(#account{}, string(), number_formatter:locale()) -> string().
-head(Account, Currency, Format) ->
-    Amount = amount_to_string(Account#account.amount, Currency, Format),
-    Name =  name_by_account(Account),
-    io_lib:format(head_template(), [Name, Amount]).
-
-
 index() ->
     io_lib:format("~s",
                   [account_open_form()]).
