@@ -2,6 +2,7 @@
 
 -module(business_logic).
 -include("data.hrl").
+-include("events.hrl").
 -export([open_account/2, get_account/1, get_person/1]).
 
 
@@ -25,6 +26,9 @@ make_person(GivenName, Surname) ->
                    given_name = GivenName,
                    surname = Surname},
     database:put_person(Person),
+    Event = #event{number = database:unique_event_number(),
+                   payload = Person},
+    database:put_event(Event),
     Person.
 
 -spec get_person(unique_id()) -> {ok, #person{} | {error, any()}}.
@@ -37,5 +41,8 @@ make_account(Person) ->
                    person_id = Person#person.id,
                    amount = 1000},
     database:put_account(Account),
+    Event = #event{number = database:unique_event_number(),
+                   payload = Account},
+    database:put_event(Event),    
     gen_server:cast(account_service, {publish, Person, Account}),
     Account.

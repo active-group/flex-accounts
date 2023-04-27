@@ -2,30 +2,36 @@
 
 -module(database).
 -include("data.hrl").
+-include("events.hrl").
 -export([init_database/0, write/2, read_all/2,
          put_account/1, get_account/1, get_all_accounts/0,
          put_person/1, get_person/1, get_all_persons/0, 
-         unique_account_number/0, unique_person_id/0,
+         put_event/1, get_all_events/0,
+         unique_account_number/0, unique_person_id/0, unique_event_number/0, 
          atomically/1]).
 
 close_tables() ->
     dets:close(person),
     dets:close(account),
-    dets:close(table_id).
+    dets:close(table_id),
+    dets:close(event).
 
 %% destroy tables in case they already existed
 destroy_tables() ->
     file:delete("person.dets"),
     file:delete("account.dets"),
-    file:delete("table_id.dets").
+    file:delete("table_id.dets"),
+    file:delete("event.dets").
 
 % unfortunately, delete_table doesn't always work such that create_table doesn't fail, so don't check return value
 create_tables() ->
     {ok, person} = dets:open_file(person, [{type, set}, {file, "person.dets"}]),
     {ok, account} = dets:open_file(account, [{type, set}, {file, "account.dets"}]),
     {ok, table_id} = dets:open_file(table_id, [{type, set}, {file, "table_id.dets"}]),
+    {ok, event} = dets:open_file(event, [{type, set}, {file, "event.dets"}]),
     dets:insert(table_id, {person, 0}),
-    dets:insert(table_id, {account, 0}).
+    dets:insert(table_id, {account, 0}),
+    dets:insert(table_id, {event, 0}).
 
 init_database() ->
     close_tables(),
@@ -51,6 +57,16 @@ read_one(Table, Id, Deserialize) ->
 read_all(Table, Deserialize) ->
     Res = dets:select(Table,[{'_',[],['$_']}]),    
     lists:map(Deserialize, Res).
+
+-spec put_event(#event{}) -> ok.
+put_event(#event{number = Number, payload = Payload}) ->
+    write(event, {Number, Payload}).
+
+deserialize_event({Number, Payload}) ->
+    #event{number = Number, payload = Payload}.
+
+-spec get_all_events() -> list(#event{}).
+get_all_events() -> read_all(event, fun deserialize_event/1).
 
 -spec put_account(#account{}) -> ok.
 put_account(#account{account_number = AccountNumber, person_id = PersonId, amount = Amount}) ->
@@ -85,6 +101,9 @@ unique_person_id() -> dets:update_counter(table_id, person, 1).
 
 -spec unique_account_number() -> unique_id().
 unique_account_number() -> dets:update_counter(table_id, account, 1).
+
+-spec unique_event_number() -> unique_id().
+unique_event_number() -> dets:update_counter(table_id, event, 1).
 
 % holdover from Mnesia
 -spec atomically(fun(() -> Ret)) -> Ret.
