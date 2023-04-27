@@ -15,12 +15,11 @@ init(PidList) ->
     register(account_service, self()),
     {ok, PidList}.
 
--spec handle_call(message(), gen_server:from(), state()) -> {reply, ok, state()}.
-% handle_call(Pid, _From, List) -> {reply, ok, [Pid | List]}.
+-spec handle_call(message(), gen_server:from(), state()) -> {reply, {ok, #event{}}, state()}.
 handle_call({Pid, no_events}, _From, List) -> 
-    {reply, database:get_all_events(), [Pid | List]};
+    {reply, {ok, database:get_all_events()}, lists:uniq([Pid | List])};
 handle_call({Pid, Event}, _From, List) -> 
-    {reply, database:get_events_from(Event), [Pid | List]}.
+    {reply, {ok, database:get_events_from(Event#event.number)}, lists:uniq([Pid | List])}.
 
 %handle_call(Message, _From, List) -> 
 %    case Message of
