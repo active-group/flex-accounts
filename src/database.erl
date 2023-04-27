@@ -68,6 +68,15 @@ deserialize_event({Number, Payload}) ->
 -spec get_all_events() -> list(#event{}).
 get_all_events() -> read_all(event, fun deserialize_event/1).
 
+-spec get_events_from(non_neg_integer()) -> [#event{}].
+get_events_from(Number) ->
+    Res = dets:select(event,
+                        [{'$1',
+                        [{'>=', {element, 1, '$1'}, Number}],
+                        ['$_']}]),
+    Events = lists:map(fun deserialize_event/1, Res),
+    lists:sort(fun (#event{number = Number1}, #event{number = Number2}) -> Number1 =< Number2 end, Events).
+
 -spec put_account(#account{}) -> ok.
 put_account(#account{account_number = AccountNumber, person_id = PersonId, amount = Amount}) ->
     write(account, {AccountNumber, PersonId, Amount}).
