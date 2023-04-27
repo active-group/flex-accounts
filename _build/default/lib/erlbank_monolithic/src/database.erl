@@ -6,7 +6,7 @@
 -export([init_database/0, write/2, read_all/2,
          put_account/1, get_account/1, get_all_accounts/0,
          put_person/1, get_person/1, get_all_persons/0, 
-         put_event/1, get_all_events/0,
+         put_event/1, get_all_events/0, get_events_from/1,
          unique_account_number/0, unique_person_id/0, unique_event_number/0, 
          atomically/1]).
 
@@ -67,6 +67,15 @@ deserialize_event({Number, Payload}) ->
 
 -spec get_all_events() -> list(#event{}).
 get_all_events() -> read_all(event, fun deserialize_event/1).
+
+-spec get_events_from(non_neg_integer()) -> [#event{}].
+get_events_from(Number) ->
+    Res = dets:select(event,
+                        [{'$1',
+                        [{'>', {element, 1, '$1'}, Number}],
+                        ['$_']}]),
+    Events = lists:map(fun deserialize_event/1, Res),
+    lists:sort(fun (#event{number = Number1}, #event{number = Number2}) -> Number1 =< Number2 end, Events).
 
 -spec put_account(#account{}) -> ok.
 put_account(#account{account_number = AccountNumber, person_id = PersonId, amount = Amount}) ->

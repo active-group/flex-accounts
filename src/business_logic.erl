@@ -29,6 +29,7 @@ make_person(GivenName, Surname) ->
     Event = #event{number = database:unique_event_number(),
                    payload = Person},
     database:put_event(Event),
+    gen_server:cast(account_service, {publish, Event}),
     Person.
 
 -spec get_person(unique_id()) -> {ok, #person{} | {error, any()}}.
@@ -44,5 +45,5 @@ make_account(Person) ->
     Event = #event{number = database:unique_event_number(),
                    payload = Account},
     database:put_event(Event),    
-    gen_server:cast(account_service, {publish, Person, Account}),
+    gen_server:cast(account_service, {publish, Event}),
     Account.
