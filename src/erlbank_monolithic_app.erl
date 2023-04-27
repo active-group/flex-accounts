@@ -9,9 +9,6 @@
 
 -export([start/2, stop/1]).
 
-
-
-
 start_cowboy() ->
     %% Cowboy test code
     Dispatch = cowboy_router:compile([{'_', [{"/", web_frontend, index},
@@ -25,8 +22,8 @@ start_cowboy() ->
 start(_StartType, _StartArgs) ->
     database:init_database(),
     start_cowboy(),
-    erlbank_monolithic_sup:start_link().
+    erlbank_monolithic_sup:start_link(),
+    server:start([]).
 
 stop(_State) ->
     ok.
-

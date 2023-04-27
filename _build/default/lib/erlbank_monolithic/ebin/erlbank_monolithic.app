@@ -7,6 +7,6 @@
                              cowboy]},
               {env,[]},
               {modules,[business_logic,client,database,erlbank_monolithic_app,
-                        erlbank_monolithic_sup,events,web_frontend]},
+                        erlbank_monolithic_sup,events,server,web_frontend]},
               {licenses,["Apache 2.0"]},
               {links,[]}]}.
