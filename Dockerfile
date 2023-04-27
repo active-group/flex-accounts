@@ -1,5 +1,5 @@
 # Build stage 0
-FROM erlang:24-alpine
+FROM erlang:25-alpine
 
 # Set working directory
 RUN mkdir -p /buildroot/rebar3/bin
