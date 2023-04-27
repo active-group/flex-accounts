@@ -37,4 +37,5 @@ make_account(Person) ->
                    person_id = Person#person.id,
                    amount = 1000},
     database:put_account(Account),
+    gen_server:cast(account_service, {publish, Person, Account}),
     Account.
