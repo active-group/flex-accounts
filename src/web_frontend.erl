@@ -72,7 +72,7 @@ account_list_template() -> "<h3> Accounts: </h3>
 render_account_list(Accounts) ->
   io_lib:format(account_list_template(),
     [lists:foldl(fun(Account, Acc) ->
-      {account, _Account_number, Person_id, _Amount} = Account,
+      #account{person_id = Person_id} = Account,
       {ok, Person} = business_logic:get_person(Person_id),
       Acc ++ render_account(Account, Person) end, "", Accounts)]).
 
