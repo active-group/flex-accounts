@@ -9,11 +9,11 @@ We send the following events:
 -type eventType() :: account_created.
 
 -record(event,
-    {id :: unique_id(),
-     eventType :: eventType(),
-     account_number :: account_number(),
-     givenName :: string(),
-     surname :: string()}).
+  {id :: unique_id(),
+  eventType:: eventType(),
+  account_number:: account_number(),
+  givenName:: string(),
+  surname:: string()}).
 ```
 
 ## 
