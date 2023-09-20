@@ -26,8 +26,8 @@ account_open_form() ->
 </form>" >>.
 
 index() ->
-    io_lib:format("~s",
-                  [account_open_form()]).
+  io_lib:format("~s~s",
+    [account_open_form(), account_list()]).
 
 %% /accounts/open
 init(Request, open_account) ->
@@ -56,3 +56,31 @@ init(Request, index) ->
                            index(),
                            Request),
     {ok, Reply, []}.
+
+
+account_list_template() -> "<h3> Accounts: </h3>
+<table>
+    <tr>
+      <th>Account-ID</th>
+      <th>Person-ID</th>
+      <th>Balance</th>
+    </tr>
+    ~s
+    </table>".
+render_account_list(Accounts) ->
+  io_lib:format(account_list_template(),
+    [lists:foldl(fun(Account, Acc) ->
+      Acc ++ render_account(Account) end, "", Accounts)]).
+
+account_template() -> "
+    <tr>
+      <td>~p</td>
+      <td>~p</td>
+      <td>~p</td>
+    </tr> ".
+render_account(#account{account_number = Account_number, person_id = Person_id, amount = Amount}) ->
+  io_lib:format(account_template(), [Account_number, Person_id, Amount]).
+
+account_list() ->
+  Accounts = database:get_all_accounts(),
+  render_account_list(Accounts).
