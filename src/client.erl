@@ -17,4 +17,13 @@ print_all_accounts() ->
   Accounts = database:get_all_accounts(),
    lists:foreach(
      fun(#account{account_number = Account_number, person_id = Person_id, amount = Amount}) ->
-       io:format("~p - ~p - ~p~n", [Account_number, Person_id, Amount]) end, Accounts).
+       {ok, #person{given_name = Given_Name, surname = Surname}} = database:get_person(Person_id),
+       io:format("~p - ~p - ~p ~p - ~p~n",
+         [
+           Account_number,
+           Person_id,
+           binary_to_list(Given_Name),
+           binary_to_list(Surname),
+           Amount]
+       ) end,
+     Accounts).
