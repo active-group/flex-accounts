@@ -15,3 +15,18 @@ We send the following events:
      givenName :: string(),
      surname :: string()}).
 ```
+
+## 
+
+How to get missing events:
+
+* use service name "accounts"
+* request missing events since eventNumber
+  -> cast with following type "get_account_events_since"
+
+```erlang
+-record(get_account_events_since, {
+      since :: unique_id(),
+      receiver_pid :: pid()
+}).
+```
