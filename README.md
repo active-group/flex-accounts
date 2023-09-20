@@ -1,20 +1,17 @@
-# Erlbank Monolithic
 
-Erlbank Legacy System
+## Event definitions
 
-## Build
+We send the following events:
 
+```erlang
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type eventType() :: account_created.
+
+-record(event,
+    {id :: unique_id(),
+     eventType :: eventType(),
+     account_number :: account_number(),
+     givenName :: string(),
+     surname :: string()}).
 ```
-$ rebar3 compile
-```
-
-
-## Run locally using rebar shell
-
-The service can be run locally including a REPL using
-
-```
-$ rebar3 shell
-```
-
-The web-frontend is served at http://localhost:8000/
