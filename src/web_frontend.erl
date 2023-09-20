@@ -73,7 +73,7 @@ render_account_list(Accounts) ->
   io_lib:format(account_list_template(),
     [lists:foldl(fun(Account, Acc) ->
       {account, _Account_number, Person_id, _Amount} = Account,
-      {ok, Person} = database:get_person(Person_id),
+      {ok, Person} = business_logic:get_person(Person_id),
       Acc ++ render_account(Account, Person) end, "", Accounts)]).
 
 account_template() -> "
@@ -89,5 +89,5 @@ render_account(#account{account_number = Account_number, person_id = Person_id, 
   io_lib:format(account_template(), [Account_number, Person_id,  binary_to_list(Given_Name), binary_to_list(Surname), Amount]).
 
 account_list() ->
-  Accounts = database:get_all_accounts(),
+  Accounts = business_logic:get_all_accounts(),
   render_account_list(Accounts).
