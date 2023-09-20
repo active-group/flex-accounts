@@ -63,6 +63,8 @@ account_list_template() -> "<h3> Accounts: </h3>
     <tr>
       <th>Account-ID</th>
       <th>Person-ID</th>
+      <th>GivenName</th>
+      <th>Surname</th>
       <th>Balance</th>
     </tr>
     ~s
@@ -70,16 +72,21 @@ account_list_template() -> "<h3> Accounts: </h3>
 render_account_list(Accounts) ->
   io_lib:format(account_list_template(),
     [lists:foldl(fun(Account, Acc) ->
-      Acc ++ render_account(Account) end, "", Accounts)]).
+      {account, _Account_number, Person_id, _Amount} = Account,
+      {ok, Person} = database:get_person(Person_id),
+      Acc ++ render_account(Account, Person) end, "", Accounts)]).
 
 account_template() -> "
     <tr>
       <td>~p</td>
       <td>~p</td>
       <td>~p</td>
+      <td>~p</td>
+      <td>~p</td>
     </tr> ".
-render_account(#account{account_number = Account_number, person_id = Person_id, amount = Amount}) ->
-  io_lib:format(account_template(), [Account_number, Person_id, Amount]).
+render_account(#account{account_number = Account_number, person_id = Person_id, amount = Amount},
+    #person{given_name = Given_Name, surname = Surname}) ->
+  io_lib:format(account_template(), [Account_number, Person_id,  binary_to_list(Given_Name), binary_to_list(Surname), Amount]).
 
 account_list() ->
   Accounts = database:get_all_accounts(),
