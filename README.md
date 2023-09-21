@@ -6,7 +6,7 @@ We send the following events:
 ```erlang
 -type unique_id() :: integer().
 -type account_number() :: integer().
--type eventType() :: account_created.
+-type eventType() :: account_created | account_deleted.
 
 -record(account_event,
   {id :: unique_id(),
