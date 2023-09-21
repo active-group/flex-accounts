@@ -31,9 +31,12 @@ start() ->
 init(Node) -> {ok, Node}.
 
 -spec handle_cast(#get_account_events_since{}, node()) -> {noreply, node()}.
-handle_cast(Request, Node) ->
+handle_cast(#get_account_events_since{} = Request, Node) ->
   logger:info("Received cast: ~p", [Request]),
-  {noreply, process_request_message(Node, Request)}.
+  {noreply, process_request_message(Node, Request)};
+handle_cast(Request, Node) ->
+  logger:info("Received unnknow cast: ~p", [Request]),
+  {noreply, Node}.
 
 -spec handle_call(#get_account_events_since{}, term(), node()) -> {reply, [], node()}.
 handle_call(Request, _Pid, Node) ->
