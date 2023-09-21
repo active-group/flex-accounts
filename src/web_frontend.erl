@@ -47,7 +47,7 @@ index() ->
 %% /accounts/open
 init(Request, open_account) ->
 
-    logger:info("Creating new account ~p", [Request]),
+    logger:info("Creating new account"),
 
     {ok, KeyValuesL, _} = cowboy_req:read_urlencoded_body(Request),
 
@@ -67,7 +67,7 @@ init(Request, open_account) ->
 %% /accounts/delete
 init(Request, delete_account) ->
 
-  logger:info("Deleting account ~p", [Request]),
+  logger:info("Deleting account"),
 
   {ok, KeyValuesL, _} = cowboy_req:read_urlencoded_body(Request),
 
