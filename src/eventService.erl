@@ -35,7 +35,7 @@ handle_cast(Request, Node) ->
   logger:info("Received cast: ~p", [Request]),
   {noreply, process_request_message(Node, Request)}.
 
--spec handle_call(#get_account_events_since{}, pid(), node()) -> {reply, [], node()}.
+-spec handle_call(#get_account_events_since{}, term(), node()) -> {reply, [], node()}.
 handle_call(Request, _Pid, Node) ->
   logger:info("Received call: ~p", [Request]),
   {reply, [], Node}.

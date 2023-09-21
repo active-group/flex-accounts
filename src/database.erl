@@ -15,10 +15,10 @@ close_tables() ->
     dets:close(table_id).
 
 %% destroy tables in case they already existed
-destroy_tables() ->
-    file:delete("person.dets"),
-    file:delete("account.dets"),
-    file:delete("table_id.dets").
+%%destroy_tables() ->
+%%    file:delete("person.dets"),
+%%    file:delete("account.dets"),
+%%    file:delete("table_id.dets").
 
 % unfortunately, delete_table doesn't always work such that create_table doesn't fail, so don't check return value
 create_tables() ->

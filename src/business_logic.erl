@@ -34,7 +34,7 @@ delete_account(AccountNumber) ->
     surname = binary_to_list(Person#person.surname)
   },
   events:put_event(EventNumber, Payload),
-  Account.
+  ok.
 
 -spec get_all_accounts() -> list(#account{}).
 get_all_accounts() -> database:get_all_accounts().
