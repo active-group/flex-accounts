@@ -11,6 +11,11 @@ account_opened_success() ->
        <a href=\"/\"> Back </a>
     " >>.
 
+account_deleted_success() ->
+  << "
+      <p> Account with account number ~p was deleted successfully </p> ~n
+       <a href=\"/\"> Back </a>
+    " >>.
 
 account_open_form() ->
             << "
@@ -25,14 +30,24 @@ account_open_form() ->
   <input type=\"submit\" value=\"Open account\" />
 </form>" >>.
 
+account_delete_form() ->
+  << "
+<h3> Delete Account </h3>
+<form method=\"post\" action=\"/accounts/delete\">
+  <label for=\"account_number\"> Account Number </label>
+  <input type=\"text\" id=\"account_number\" name=\"account_number\" />
+
+  <input type=\"submit\" value=\"Delete account\" />
+</form>" >>.
+
 index() ->
-  io_lib:format("~s~s",
-    [account_open_form(), account_list()]).
+  io_lib:format("~s~s~s",
+    [account_open_form(), account_delete_form(), account_list()]).
 
 %% /accounts/open
 init(Request, open_account) ->
 
-    logger:info("Creating new account"),
+    logger:info("Creating new account ~p", [Request]),
 
     {ok, KeyValuesL, _} = cowboy_req:read_urlencoded_body(Request),
 
@@ -48,6 +63,25 @@ init(Request, open_account) ->
     logger:info("Created account with account number ~p", [Account#account.account_number]),
 
     {ok, Reply, []};
+
+%% /accounts/delete
+init(Request, delete_account) ->
+
+  logger:info("Deleting account ~p", [Request]),
+
+  {ok, KeyValuesL, _} = cowboy_req:read_urlencoded_body(Request),
+
+  KeyValues = maps:from_list(KeyValuesL),
+  AccountNumber = binary_to_integer(maps:get(<<"account_number">>, KeyValues)),
+
+  business_logic:delete_account(AccountNumber),
+  Body = io_lib:format(account_deleted_success(), [AccountNumber]),
+
+  Reply = cowboy_req:reply(200, #{<<"content-type">> => <<"text/html">>}, Body, Request),
+
+  logger:info("Deleted account with account number ~p", [AccountNumber]),
+
+  {ok, Reply, []};
 
 %% /index
 init(Request, index) ->
