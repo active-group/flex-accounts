@@ -6,6 +6,7 @@
          put_account/1, get_account/1, get_all_accounts/0,
          put_person/1, get_person/1, get_all_persons/0,
          unique_account_number/0,unique_person_id/0,
+         delete_account/1,
          atomically/1]).
 
 close_tables() ->
@@ -36,6 +37,10 @@ init_database() ->
 
 write(Table, Tuple) ->
     ok = dets:insert(Table, Tuple),
+    ok.
+
+delete(Table, Tuple) ->
+    ok = dets:delete(Table, Tuple),
     ok.
 
 -spec read_one(dets:tab_name(), unique_id(), fun((tuple()) -> Obj)) -> {ok, Obj} | {error, not_found | more_than_one}.
@@ -70,6 +75,10 @@ get_all_accounts() -> read_all(account, fun deserialize_account/1).
 
 -spec unique_account_number() -> unique_id().
 unique_account_number() -> dets:update_counter(table_id, account, 1).
+
+-spec delete_account(account_number()) -> ok | {error, any()}.
+delete_account(AccountNumber) ->
+    delete(account, AccountNumber).
 
 % ==================== Person =====================
 -spec put_person(#person{}) -> ok.

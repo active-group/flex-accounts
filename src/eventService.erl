@@ -31,8 +31,8 @@ start() ->
 init(Node) -> {ok, Node}.
 
 -spec handle_cast(#get_account_events_since{}, node()) -> {noreply, node()}.
-handle_cast(Request, State) ->
-  {noreply, process_request_message(State, Request)}.
+handle_cast(Request, Node) ->
+  {noreply, process_request_message(Node, Request)}.
 
 -spec handle_call(#get_account_events_since{}, pid(), node()) -> {reply, [], node()}.
 handle_call(_Request, _Pid, Node) ->
