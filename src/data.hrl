@@ -14,7 +14,7 @@
 -record(account,
     {account_number :: account_number(),
      person_id :: unique_id()}).
--record(event,
+-record(account_event,
     {id :: unique_id(),
      eventType:: eventType(),
      account_number:: account_number(),

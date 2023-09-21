@@ -8,7 +8,7 @@ We send the following events:
 -type account_number() :: integer().
 -type eventType() :: account_created.
 
--record(event,
+-record(account_event,
   {id :: unique_id(),
   eventType:: eventType(),
   account_number:: account_number(),

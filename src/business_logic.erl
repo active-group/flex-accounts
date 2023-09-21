@@ -44,7 +44,7 @@ make_account(Person) ->
                    person_id = Person#person.id},
     database:put_account(Account),
     EventNumber = events:unique_event_number(),
-    Payload = #event{
+    Payload = #account_event{
       id = EventNumber,
       eventType = account_created,
       account_number = AccountNumber,
