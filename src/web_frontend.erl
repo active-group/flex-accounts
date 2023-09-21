@@ -65,7 +65,6 @@ account_list_template() -> "<h3> Accounts: </h3>
       <th>Person-ID</th>
       <th>GivenName</th>
       <th>Surname</th>
-      <th>Balance</th>
     </tr>
     ~s
     </table>".
@@ -82,11 +81,10 @@ account_template() -> "
       <td>~p</td>
       <td>~p</td>
       <td>~p</td>
-      <td>~p</td>
     </tr> ".
-render_account(#account{account_number = Account_number, person_id = Person_id, amount = Amount},
+render_account(#account{account_number = Account_number, person_id = Person_id},
     #person{given_name = Given_Name, surname = Surname}) ->
-  io_lib:format(account_template(), [Account_number, Person_id,  binary_to_list(Given_Name), binary_to_list(Surname), Amount]).
+  io_lib:format(account_template(), [Account_number, Person_id,  binary_to_list(Given_Name), binary_to_list(Surname)]).
 
 account_list() ->
   Accounts = business_logic:get_all_accounts(),

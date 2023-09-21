@@ -16,14 +16,13 @@ open_account(GivenName, Surname) ->
 print_all_accounts() ->
   Accounts = business_logic:get_all_accounts(),
    lists:foreach(
-     fun(#account{account_number = Account_number, person_id = Person_id, amount = Amount}) ->
+     fun(#account{account_number = Account_number, person_id = Person_id}) ->
        {ok, #person{given_name = Given_Name, surname = Surname}} = business_logic:get_person(Person_id),
-       io:format("~p - ~p - ~p ~p - ~p~n",
+       io:format("~p - ~p - ~p ~p ~n",
          [
            Account_number,
            Person_id,
            binary_to_list(Given_Name),
-           binary_to_list(Surname),
-           Amount]
+           binary_to_list(Surname)]
        ) end,
      Accounts).
