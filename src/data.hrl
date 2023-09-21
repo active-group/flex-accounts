@@ -6,9 +6,7 @@
 
 -record(get_account_events_since, {
     since :: unique_id(),
-    receiver_pid :: pid()
-}).
-
+    receiver_pid :: pid()}).
 -record(person,
     {id :: unique_id(),
      given_name :: binary(),
@@ -17,7 +15,6 @@
     {account_number :: account_number(),
      person_id :: unique_id(),
      amount :: money()}). % maybe obsolete!?!?!
-
 -record(event,
     {id :: unique_id(),
      eventType:: eventType(),
@@ -25,4 +22,3 @@
      givenName:: string(),
      surname:: string()}).
 
--record(eventDB, {number :: non_neg_integer(), payload :: event()}).

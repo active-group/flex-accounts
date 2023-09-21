@@ -2,6 +2,7 @@
 
 -module(business_logic).
 -include("data.hrl").
+-include("events.hrl").
 -export([open_account/2, get_account/1, get_all_accounts/0, get_person/1]).
 
 
@@ -40,4 +41,13 @@ make_account(Person) ->
                    person_id = Person#person.id,
                    amount = 1000},
     database:put_account(Account),
+    EventNumber = events:unique_event_number(),
+    Payload = #event{
+      id = EventNumber,
+      eventType = account_created,
+      account_number = AccountNumber,
+      givenName = binary_to_list(Person#person.given_name),
+      surname = binary_to_list(Person#person.surname)
+    },
+    events:put_event(EventNumber, Payload),
     Account.

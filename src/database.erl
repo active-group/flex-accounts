@@ -31,6 +31,7 @@ init_database() ->
     close_tables(),
     destroy_tables(),
     create_tables(),
+    events:init_events(),
     ok.
 
 write(Table, Tuple) ->
@@ -52,6 +53,7 @@ read_all(Table, Deserialize) ->
     Res = dets:select(Table,[{'_',[],['$_']}]),
     lists:map(Deserialize, Res).
 
+% =================== Account =====================
 -spec put_account(#account{}) -> ok.
 put_account(#account{account_number = AccountNumber, person_id = PersonId, amount = Amount}) ->
     write(account, {AccountNumber, PersonId, Amount}).
@@ -66,6 +68,10 @@ get_account(AccountNumber) ->
 -spec get_all_accounts() -> list(#account{}).
 get_all_accounts() -> read_all(account, fun deserialize_account/1).
 
+-spec unique_account_number() -> unique_id().
+unique_account_number() -> dets:update_counter(table_id, account, 1).
+
+% ==================== Person =====================
 -spec put_person(#person{}) -> ok.
 put_person(#person{id = Id, given_name = GivenName, surname = Surname}) ->
     write(person, {Id, GivenName, Surname}).
@@ -79,9 +85,6 @@ get_person(Id) ->
 
 -spec get_all_persons() -> list(#person{}).
 get_all_persons() -> read_all(person, fun deserialize_person/1).
-
--spec unique_account_number() -> unique_id().
-unique_account_number() -> dets:update_counter(table_id, account, 1).
 
 -spec unique_person_id() -> unique_id().
 unique_person_id() -> dets:update_counter(table_id, person, 1).

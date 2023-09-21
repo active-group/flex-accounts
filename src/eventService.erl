@@ -8,19 +8,49 @@
 %%%-------------------------------------------------------------------
 -module(eventService).
 -author("ferenc.noack").
+-include("data.hrl").
+-include("events.hrl").
 
 %% API
--export([send_event/2]).
+-export([start/0, handle_cast/2, handle_call/3, init/1, trigger/1]).
 
--type eventReceiver() :: transfers | statements.
+-behaviour(gen_server).
 
--spec send_event(server_ref(), event()) -> ok.
-send_event(Server, Event) ->
-  gen_server:cast(Server, Event).
+-spec start() -> pid().
+start() ->
+  {ok, Pid} = gen_server:start(
+    eventService,
+    egal, % -> init
+    [{debug, [trace]}]),
+  register(accounts, Pid),
+  logger:info("My PID: ~p", [Pid]),
+  Pid.
 
-multicast_event(Node, Event) ->
-  send_event({'transfers', Node}, Event),
-  send_event({'statements', Node}, Event).
+% läuft im Server-Prozeß, cf. self()
+-spec init(atom()) -> {ok, node()}.
+init(Node) -> {ok, Node}.
 
-send_event_list(Server, EventList) ->
-  lists:foreach( fun(Event) -> send_event(Server, Event) end, EventList).
+-spec handle_cast(#get_account_events_since{}, node()) -> {noreply, node()}.
+handle_cast(Request, State) ->
+  {noreply, process_request_message(State, Request)}.
+
+-spec handle_call(#get_account_events_since{}, pid(), node()) -> {reply, [], node()}.
+handle_call(_Request, _Pid, Node) ->
+  {reply, [], Node}.
+
+-spec process_request_message(atom(), #get_account_events_since{}) -> node().
+process_request_message(Node, #get_account_events_since{since = Since, receiver_pid = Receiver_Pid}) ->
+  EventList = events:get_events_from(Since),
+  PayloadList = lists:map(
+    fun(#eventDB{payload = Payload}) ->
+      Payload end,
+    EventList),
+  lists:foreach(
+    fun(Payload) ->
+      logger:info("Send event to ~p with payload ~p", [Receiver_Pid, Payload]),
+      gen_server:cast(Receiver_Pid, Payload) end,
+    PayloadList),
+  Node.
+
+trigger(Pid) ->
+  gen_server:cast(Pid, #get_account_events_since{since = 0, receiver_pid = self()}).
