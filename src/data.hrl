@@ -1,7 +1,7 @@
 -type unique_id() :: integer().
 -type account_number() :: integer().
 -type money() :: number().
--type eventType() :: account_created. % | account_deleted.
+-type eventType() :: account_created | account_deleted.
 
 
 -record(get_account_events_since, {

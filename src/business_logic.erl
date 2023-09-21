@@ -20,7 +20,21 @@ open_account(GivenName, Surname) ->
 get_account(AccountNumber) -> database:get_account(AccountNumber).
 
 -spec delete_account(account_number()) -> ok | {error, any()}.
-delete_account(AccountNumber) -> database:delete_account(AccountNumber).
+delete_account(AccountNumber) ->
+  {ok, Account} = database:get_account(AccountNumber),
+  logger:info("Delete account ~p", [Account]),
+  {ok, Person} = database:get_person(Account#account.person_id),
+  database:delete_account(AccountNumber),
+  EventNumber = events:unique_event_number(),
+  Payload = #account_event{
+    id = EventNumber,
+    eventType = account_deleted,
+    account_number = AccountNumber,
+    givenName = binary_to_list(Person#person.given_name),
+    surname = binary_to_list(Person#person.surname)
+  },
+  events:put_event(EventNumber, Payload),
+  Account.
 
 -spec get_all_accounts() -> list(#account{}).
 get_all_accounts() -> database:get_all_accounts().
