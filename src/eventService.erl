@@ -12,7 +12,7 @@
 -include("events.hrl").
 
 %% API
--export([start/0, handle_cast/2, handle_call/3, init/1, trigger/1]).
+-export([start/0, handle_cast/2, handle_call/3, init/1, trigger/2]).
 
 -behaviour(gen_server).
 
@@ -55,5 +55,5 @@ process_request_message(Node, #get_account_events_since{since = Since, receiver_
     PayloadList),
   Node.
 
-trigger(Pid) ->
-  gen_server:cast(Pid, #get_account_events_since{since = 0, receiver_pid = self()}).
+trigger(Pid, Since) ->
+  gen_server:cast(Pid, #get_account_events_since{since = Since, receiver_pid = self()}).
