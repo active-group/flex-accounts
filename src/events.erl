@@ -6,7 +6,7 @@
 
 init_events() ->
     dets:close(event),
-    file:delete("event.dets"),
+    % file:delete("event.dets"),
     {ok, event} = dets:open_file(event, [{type, set}, {file, "event.dets"}]),
     dets:insert(table_id, {event, 0}).
 
