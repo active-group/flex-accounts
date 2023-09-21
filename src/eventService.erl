@@ -32,15 +32,18 @@ init(Node) -> {ok, Node}.
 
 -spec handle_cast(#get_account_events_since{}, node()) -> {noreply, node()}.
 handle_cast(Request, Node) ->
+  logger:info("Received cast: ~p", [Request]),
   {noreply, process_request_message(Node, Request)}.
 
 -spec handle_call(#get_account_events_since{}, pid(), node()) -> {reply, [], node()}.
-handle_call(_Request, _Pid, Node) ->
+handle_call(Request, _Pid, Node) ->
+  logger:info("Received call: ~p", [Request]),
   {reply, [], Node}.
 
 -spec process_request_message(atom(), #get_account_events_since{}) -> node().
 process_request_message(Node, #get_account_events_since{since = Since, receiver_pid = Receiver_Pid}) ->
   EventList = events:get_events_from(Since),
+  logger:info("Will send ~p events.", [length(EventList)]),
   PayloadList = lists:map(
     fun(#eventDB{payload = Payload}) ->
       Payload end,
