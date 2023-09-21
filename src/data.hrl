@@ -13,8 +13,7 @@
      surname :: binary()}).
 -record(account,
     {account_number :: account_number(),
-     person_id :: unique_id(),
-     amount :: money()}). % maybe obsolete!?!?!
+     person_id :: unique_id()}).
 -record(event,
     {id :: unique_id(),
      eventType:: eventType(),

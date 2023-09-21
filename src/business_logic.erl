@@ -38,8 +38,7 @@ get_person(Id) -> database:get_person(Id).
 make_account(Person) ->
     AccountNumber = database:unique_account_number(),
     Account = #account{account_number = AccountNumber,
-                   person_id = Person#person.id,
-                   amount = 1000},
+                   person_id = Person#person.id},
     database:put_account(Account),
     EventNumber = events:unique_event_number(),
     Payload = #event{
