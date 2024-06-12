@@ -23,9 +23,14 @@ The web-frontend is served at http://localhost:8000/
 ## events
 
 ### account_created
-
+{
 person_id  : integer()
 account_number: integer()
 given_name: binary()
 surname : binary()
 amount: number()
+}
+
+### account_number
+
+ok{account_Number integer()}
