@@ -37,5 +37,5 @@ make_account(Person) ->
                    person_id = Person#person.id,
                    amount = 1000},
     database:put_account(Account),
-    push_service:sendEvent(Person, Account),
+    message_server:storeEvent(Person, Account),
     Account.

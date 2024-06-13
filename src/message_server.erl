@@ -7,8 +7,9 @@
     handle_call/3,
     handle_cast/2,
     sendAck/2,
-    ackReceiver_start/1,
-    ackReceiver_start_link/1
+    message_server_start/0,
+    message_server_start_link/0,
+    storeEvent/2
 ]).
 
 
@@ -32,7 +33,8 @@
 
 -spec init(#state{}) -> {ok, #state{}}.
 
-init(State) ->
+init(_) ->
+    State = #state{},
     {ok, State}.
 
 %call: RPC
@@ -44,21 +46,18 @@ init(State) ->
 handle_call(_R, _Pid, State) ->
     {reply, {error_not_implemented}, State}.
 
--spec handle_cast(#ok{}, #state{}) ->
+-spec handle_cast(#ok{}|#account_created{}, #state{}) ->
     {noreply, #state{}}.
+
 
 handle_cast(#ok{account_number = _AccountNumber}, State) ->
-    {noreply, State}.
+    {noreply, State};
+handle_cast(#account_created{} = Event, State) ->
 
--spec handle_cast(#account_created{}, #state{}) ->
-    {noreply, #state{}}.
-
-handle_cast(#account_created{}, State) ->
-    {noreply, State}.
-
-
-
-
+    {noreply, State#state{
+        messagesToStatements = [ Event| messagesToStatements], 
+        messagesToTranfer = [ Event| messagesToTranfer]
+    }}.
 
 -spec sendAck(pid(), unique_id()) -> ok.
 sendAck(Pid, AccountNumber) -> 
@@ -72,22 +71,24 @@ storeEvent(Person, Account) ->
             account_number = Account#account.account_number,
             person_id = Person#person.id,
             amount = Account#account.amount
-        };
-    gen_server::cast(AccountCreated)
+        },
+    logger:info("storeEvent "),
+    
+    gen_server:cast(?MODULE,AccountCreated)
     .
 
 
-ackReceiver_start(State) ->
+message_server_start() ->
     gen_server:start(
         ?MODULE, 
-        State, %geht an init()
+        [], %geht an init()
         [{debug, [trace]}]
     ).
 
-ackReceiver_start_link(State) ->
+message_server_start_link() ->
     gen_server:start_link(
         ?MODULE, 
-        State, %geht an init()
-        []
+        [], %geht an init()
+        [{debug, [trace]}]
     ).
 
