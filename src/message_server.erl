@@ -51,7 +51,7 @@ handle_info(interval, #state{
         messagesToTransfer = MessagesToTransfer
     } = State) ->
     sendEvents(transfers, MessagesToStatements),
-    sendEvents(statemens, MessagesToTransfer),
+    sendEvents(statements, MessagesToTransfer),
     {noreply, State}
 .
 
