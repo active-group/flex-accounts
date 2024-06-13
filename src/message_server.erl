@@ -9,17 +9,20 @@
     sendAck/1,
     message_server_start/0,
     message_server_start_link/0,
-    storeEvent/2
+    storeEvent/2,
+    sendEvents/2,
+    handle_info/2
 ]).
 
 
 
 
 
--record(ok, {account_number :: unique_id()}).
+-record(ok, {sender :: binary(), account_number :: unique_id()}).
+-record(send, {}).
 
 
--record(state, {messagesToStatements :: list(), messagesToTranfer :: list}).
+-record(state, {messagesToStatements :: list(), messagesToTransfer :: list}).
 
 -record(account_created,
     {
@@ -36,9 +39,21 @@
 init(_) ->
     State = #state{
         messagesToStatements = [],
-        messagesToTranfer = []
+        messagesToTransfer = []
     },
+    Interval = 5000,
+    timer:send_interval(Interval,interval),
     {ok, State}.
+
+
+handle_info(interval, #state{
+        messagesToStatements = MessagesToStatements,
+        messagesToTransfer = MessagesToTransfer
+    } = State) ->
+    sendEvents(tranfers, MessagesToStatements),
+    sendEvents(statemens, MessagesToTransfer),
+    {noreply, State}
+.
 
 %call: RPC
 %cast: "auswerfen"  "fire-and-forget"
@@ -49,17 +64,34 @@ init(_) ->
 handle_call(_R, _Pid, State) ->
     {reply, {error_not_implemented}, State}.
 
--spec handle_cast(#ok{}|#account_created{}, #state{}) ->
+-spec handle_cast(#ok{}|#account_created{}|#send{}, #state{}) ->
     {noreply, #state{}}.
 
 
-handle_cast(#ok{account_number = _AccountNumber}, State) ->
+handle_cast(#ok{sender = transfers, account_number = AccountNumber}, State) ->
+    Pred = fun(#account_created{account_number = InternalAccountNumber}) -> AccountNumber /= InternalAccountNumber end,
+    NewMessagesToTransfer = lists:filter(Pred, State#state.messagesToTransfer),
+    NewState = State#state{messagesToTransfer = NewMessagesToTransfer},
+    {noreply, NewState};
+
+handle_cast(#ok{sender = statements, account_number = AccountNumber}, State) ->
+    Pred = fun(#account_created{account_number = InternalAccountNumber}) -> AccountNumber /= InternalAccountNumber end,
+    NewMessagesToStatements = lists:filter(Pred, State#state.messagesToStatements),
+    NewState = State#state{messagesToStatements = NewMessagesToStatements},
+    {noreply, NewState};
+
+
+handle_cast(#send{}, State) ->
     {noreply, State};
+
+
+
+
 handle_cast(#account_created{} = Event, State) ->
 
     {noreply, State#state{
         messagesToStatements = [ Event| State#state.messagesToStatements], 
-        messagesToTranfer = [ Event| State#state.messagesToTranfer]
+        messagesToTransfer = [ Event| State#state.messagesToTransfer]
     }}.
 
 -spec sendAck(unique_id()) -> ok.
@@ -79,6 +111,15 @@ storeEvent(Person, Account) ->
     
     gen_server:cast(accounts,AccountCreated)
     .
+
+- spec sendEvents(string(),list()) -> ok.
+
+sendEvents(_,[]) -> 
+    ok;
+sendEvents(Target, [First|Rest]) -> 
+    gen_server:cast(Target, First),
+    sendEvents(Target,Rest)
+.
 
 
 message_server_start() ->
