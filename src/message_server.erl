@@ -18,7 +18,7 @@
 
 
 
--record(ok, {sender :: binary(), account_number :: unique_id()}).
+-record(ok, {sender :: atom(), account_number :: unique_id()}).
 -record(send, {}).
 
 
@@ -51,8 +51,8 @@ handle_info(interval, #state{
         messagesToStatements = MessagesToStatements,
         messagesToTransfer = MessagesToTransfer
     } = State) ->
-    sendEvents(transfers, "TRANSFERS_HOST", MessagesToStatements),
-    sendEvents(statements,"STATEMENT_HOST",MessagesToTransfer),
+    sendEvents(transfers, "TRANSFERS_HOST", MessagesToTransfer),
+    sendEvents(statements,"STATEMENT_HOST",MessagesToStatements),
     {noreply, State}
 .
 
