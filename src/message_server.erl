@@ -6,7 +6,7 @@
     init/1,
     handle_call/3,
     handle_cast/2,
-    sendAck/2,
+    sendAck/1,
     message_server_start/0,
     message_server_start_link/0,
     storeEvent/2
@@ -59,9 +59,9 @@ handle_cast(#account_created{} = Event, State) ->
         messagesToTranfer = [ Event| messagesToTranfer]
     }}.
 
--spec sendAck(pid(), unique_id()) -> ok.
-sendAck(Pid, AccountNumber) -> 
-    gen_server:cast(Pid,#ok{account_number = AccountNumber}).
+-spec sendAck(unique_id()) -> ok.
+sendAck(AccountNumber) -> 
+    gen_server:cast(accounts,#ok{account_number = AccountNumber}).
 
 -spec storeEvent(#person{}, #account{}) -> ok.
 storeEvent(Person, Account) ->
@@ -74,7 +74,7 @@ storeEvent(Person, Account) ->
         },
     logger:info("storeEvent "),
     
-    gen_server:cast(?MODULE,AccountCreated)
+    gen_server:cast(accounts,AccountCreated)
     .
 
 
