@@ -102,11 +102,11 @@ sendAck(AccountNumber) ->
 -spec storeEvent(#person{}, #account{}) -> ok.
 storeEvent(Person, Account) ->
     AccountCreated = #account_created{
+            account_number = Account#account.account_number,
             given_name = Person#person.given_name,
             surname = Person#person.surname,
-            account_number = Account#account.account_number,
-            person_id = Person#person.id,
-            amount = Account#account.amount
+            amount = Account#account.amount,
+            person_id = Person#person.id
         },
     logger:info("storeEvent "),
     
