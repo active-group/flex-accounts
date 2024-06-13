@@ -34,7 +34,10 @@
 -spec init(#state{}) -> {ok, #state{}}.
 
 init(_) ->
-    State = #state{},
+    State = #state{
+        messagesToStatements = [],
+        messagesToTranfer = []
+    },
     {ok, State}.
 
 %call: RPC
@@ -55,8 +58,8 @@ handle_cast(#ok{account_number = _AccountNumber}, State) ->
 handle_cast(#account_created{} = Event, State) ->
 
     {noreply, State#state{
-        messagesToStatements = [ Event| messagesToStatements], 
-        messagesToTranfer = [ Event| messagesToTranfer]
+        messagesToStatements = [ Event| State#state.messagesToStatements], 
+        messagesToTranfer = [ Event| State#state.messagesToTranfer]
     }}.
 
 -spec sendAck(unique_id()) -> ok.

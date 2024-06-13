@@ -26,9 +26,9 @@ start_cowboy() ->
 start(_StartType, _StartArgs) ->
     database:init_database(),
     start_cowboy(),
-    erlbank_monolithic_sup:start_link(),
     {ok, Pid} = message_server:message_server_start_link(),
-    register(accounts,Pid)
+    register(accounts,Pid),
+    erlbank_monolithic_sup:start_link()
 .
 
 stop(_State) ->
