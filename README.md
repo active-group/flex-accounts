@@ -20,6 +20,10 @@ $ rebar3 shell
 The web-frontend is served at http://localhost:8000/
 
 
+## dinge
+net_adm:ping('transfers@PF2PMRC0'). 
+client:open_account("Vor","nach").
+
 ## events
 
 ### account_created
@@ -33,4 +37,4 @@ amount: number()
 
 ### account_number
 
-ok{account_Number integer()}
+-record(ok, {sender :: binary(), account_number :: unique_id()}).
