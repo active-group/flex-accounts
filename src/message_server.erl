@@ -10,7 +10,7 @@
     message_server_start/0,
     message_server_start_link/0,
     storeEvent/2,
-    sendEvents/2,
+    sendEvents/3,
     handle_info/2
 ]).
 
@@ -51,8 +51,8 @@ handle_info(interval, #state{
         messagesToStatements = MessagesToStatements,
         messagesToTransfer = MessagesToTransfer
     } = State) ->
-    sendEvents(transfers, MessagesToStatements),
-    sendEvents(statements, MessagesToTransfer),
+    sendEvents(transfers, "TRANSFERS_HOST", MessagesToStatements),
+    sendEvents(statements,"STATEMENT_HOST",MessagesToTransfer),
     {noreply, State}
 .
 
@@ -113,13 +113,13 @@ storeEvent(Person, Account) ->
     gen_server:cast(accounts,AccountCreated)
     .
 
-- spec sendEvents(string(),list()) -> ok.
+- spec sendEvents(string(),string(),list()) -> ok.
 
-sendEvents(_,[]) -> 
+sendEvents(_,_,[]) -> 
     ok;
-sendEvents(Target, [First|Rest]) -> 
-    gen_server:cast({Target,node_util:node_from_env(Target, "")}, First),
-    sendEvents(Target,Rest)
+sendEvents(Target, ENV_HOSTNAME, [First|Rest]) -> 
+    gen_server:cast({Target,node_util:node_from_env(Target, ENV_HOSTNAME)}, First),
+    sendEvents(Target,ENV_HOSTNAME,Rest)
 .
 
 
