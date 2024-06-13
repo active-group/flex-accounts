@@ -50,7 +50,7 @@ handle_info(interval, #state{
         messagesToStatements = MessagesToStatements,
         messagesToTransfer = MessagesToTransfer
     } = State) ->
-    sendEvents(tranfers, MessagesToStatements),
+    sendEvents(transfers, MessagesToStatements),
     sendEvents(statemens, MessagesToTransfer),
     {noreply, State}
 .
@@ -117,7 +117,7 @@ storeEvent(Person, Account) ->
 sendEvents(_,[]) -> 
     ok;
 sendEvents(Target, [First|Rest]) -> 
-    gen_server:cast(Target, First),
+    gen_server:cast({Target,node_util:node_from_env(Target, "")}, First),
     sendEvents(Target,Rest)
 .
 
