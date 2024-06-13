@@ -26,11 +26,12 @@
 
 -record(account_created,
     {
+     account_number :: account_number(),
      given_name :: binary(),
      surname :: binary(),
-     account_number :: account_number(),
-     person_id :: unique_id(),
-     amount :: money()}
+     amount :: money(),
+     person_id :: unique_id()
+     }
     ).
 
 
