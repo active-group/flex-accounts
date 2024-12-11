@@ -1,4 +1,4 @@
-# Erlbank Monolithic
+# Erlbank account
 
 Erlbank Legacy System
 
@@ -35,7 +35,7 @@ $ rebar3 shell
 You can set a short name via:
 
 ```
-$ rebar3 shell --sname=monolithic
+$ rebar3 shell --sname=account
 ```
 
 The web-frontend is served at http://localhost:8000/
