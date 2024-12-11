@@ -90,20 +90,6 @@ account_open_form() ->
         "</form>"
     >>.
 
-%% returns the name of the person associated to the account nr
-%% given by account number.
--spec name_by_account_number(unique_id()) -> string().
-name_by_account_number(AccountNumber) ->
-    {ok, Account} = business_logic:get_account(AccountNumber),
-    name_by_account(Account).
-
-%% returns the name of the person associated to the account
-%% given by account.
--spec name_by_account(#account{}) -> string().
-name_by_account(Account) ->
-    {ok, Person} = business_logic:get_person(Account#account.person_id),
-    io_lib:format("~s ~s", [Person#person.given_name, Person#person.surname]).
-
 back_button() ->
     "<a href=\"/\">Back </a>".
 
