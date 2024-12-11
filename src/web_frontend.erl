@@ -1,11 +1,26 @@
 -module(web_frontend).
--include("data.hrl").
 -export([init/2]).
+
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type money() :: number().
+
+-record(person, {
+    id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary()
+}).
+-record(account, {
+    account_number :: account_number(),
+    person_id :: unique_id(),
+    amount :: money()
+}).
 
 account_opened_success() ->
     <<
         "
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -16,8 +31,10 @@ account_opened_success() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "       <a href=\"/\"> Back </a>
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -33,8 +50,10 @@ account_open_form() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "<h3> Open Account </h3>
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -45,8 +64,10 @@ account_open_form() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "  <label for=\"accounts_givenName\"> Given Name </label>
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -57,8 +78,10 @@ account_open_form() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -69,8 +92,10 @@ account_open_form() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "  <input type=\"text\" id=\"accounts_surname\" name=\"accounts_surname\" />
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"
@@ -81,8 +106,10 @@ account_open_form() ->
         "\n"
         "\n"
         "\n"
+        "\n"
         "  <input type=\"submit\" value=\"Open account\" />
 \n"
+        "\n"
         "\n"
         "\n"
         "\n"

@@ -1,9 +1,22 @@
 %% This module represents the frontend layer
 
 -module(client).
--include("data.hrl").
 -export([open_account/2, name_by_account_number/1]).
 
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type money() :: number().
+
+-record(person, {
+    id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary()
+}).
+-record(account, {
+    account_number :: account_number(),
+    person_id :: unique_id(),
+    amount :: money()
+}).
 %% returns the name of the person associated to the account
 %% given by account number.
 -spec name_by_account_number(account_number()) -> string().

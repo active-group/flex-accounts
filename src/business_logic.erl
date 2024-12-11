@@ -1,8 +1,22 @@
 %% This module represents the business logic layer
 
 -module(business_logic).
--include("data.hrl").
 -export([open_account/2, get_account/1, get_person/1]).
+
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type money() :: number().
+
+-record(person, {
+    id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary()
+}).
+-record(account, {
+    account_number :: account_number(),
+    person_id :: unique_id(),
+    amount :: money()
+}).
 
 %% Opens an account, that is creates a new account containing a new person
 %% Writes them into database.

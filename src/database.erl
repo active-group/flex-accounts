@@ -1,7 +1,22 @@
 %% This module represents the database layer
 
 -module(database).
--include("data.hrl").
+
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type money() :: number().
+
+-record(person, {
+    id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary()
+}).
+-record(account, {
+    account_number :: account_number(),
+    person_id :: unique_id(),
+    amount :: money()
+}).
+
 -export([
     init_database/0,
     write/2,

@@ -10,7 +10,6 @@ init_events() ->
     {ok, event} = dets:open_file(event, [{type, set}, {file, "event.dets"}]),
     dets:insert(table_id, {event, 0}).
 
-
 -spec unique_event_number() -> non_neg_integer().
 unique_event_number() -> dets:update_counter(table_id, event, 1).
 
@@ -30,9 +29,11 @@ get_all_events() ->
 
 -spec get_events_from(non_neg_integer()) -> [#event{}].
 get_events_from(Number) ->
-    Res = dets:select(event,
-                        [{'$1',
-                        [{'>=', {element, 1, '$1'}, Number}],
-                        ['$_']}]),
+    Res = dets:select(
+        event,
+        [{'$1', [{'>=', {element, 1, '$1'}, Number}], ['$_']}]
+    ),
     Events = lists:map(fun deserialize_event/1, Res),
-    lists:sort(fun (#event{number = Number1}, #event{number = Number2}) -> Number1 =< Number2 end, Events).
+    lists:sort(
+        fun(#event{number = Number1}, #event{number = Number2}) -> Number1 =< Number2 end, Events
+    ).
