@@ -90,12 +90,6 @@ account_open_form() ->
         "</form>"
     >>.
 
--spec amount_to_string(money(), string(), number_formatter:locale()) -> string().
-amount_to_string(Amount, Currency, Format) ->
-    {ok, AmountExchanged} = exchange_service:exchange(Currency, Amount),
-    AmountFormatted = number_formatter:format(Format, AmountExchanged),
-    AmountFormatted ++ " " ++ Currency.
-
 %% returns the name of the person associated to the account nr
 %% given by account number.
 -spec name_by_account_number(unique_id()) -> string().

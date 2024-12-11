@@ -23,13 +23,3 @@ open_account(GivenName, Surname) ->
     io:format("Account was successfully opened. Account number: ~p ~n", [
         Account#account.account_number
     ]).
-
-%% prints the header of a bank statement, namely the full name and the
-%% current balance, associated with the account number to stdout.
-print_head(AccountNumber) ->
-    {ok, Account} = business_logic:get_account(AccountNumber),
-    Name = name_by_account_number(AccountNumber),
-    io:format("~nBank statement for: ~s~n", [Name]),
-    io:format("---------------------------------------------------- ~n", []),
-    io:format("Balance: ~p~n", [Account#account.amount]),
-    io:format("---------------------------------------------------- ~n", []).
