@@ -6,7 +6,9 @@
 % 1. Fall X kleiner Current-Accountnumber:
 % Antwort: delta(X bis Current-Accountnumber).
 % 2. Fall X >= Current-Accountnumber:
-% Antwort: keine.
+% Antwort: keine. Weil Asyncron
+% Struktur:  
+% Antwort-Format: {}
 
 % Aliveness-Problematik 
 % Bei 1 u. 2
