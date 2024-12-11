@@ -2,7 +2,7 @@
 
 -module(client).
 -include("data.hrl").
--export([open_account/2, statement/1]).
+-export([open_account/2]).
 
 %% returns the name of the person associated to the account
 %% given by account number.
