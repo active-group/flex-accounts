@@ -17,6 +17,10 @@
     code_change/3
 ]).
 
+-type unique_id() :: integer().
+-type account_number() :: integer().
+-type money() :: number().
+
 -record(account_dto, {
     account_number :: number(),
     person_id :: number(),
@@ -25,11 +29,20 @@
     amount :: number()
 }).
 
+-record(person, {
+    id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary()
+}).
+-record(account, {
+    account_number :: account_number(),
+    person_id :: unique_id(),
+    amount :: money()
+}).
+
 -record(state, {
     % Map von Pid zu Subscription-Infos
-    subscribers = #{},
-    % Gesamtliste aller Accounts (Liste von #account_dto{})
-    all_accounts = []
+    subscribers = #{}
 }).
 
 start_link() ->
@@ -48,9 +61,23 @@ add_account(NewAccount) ->
 init([]) ->
     {ok, #state{}}.
 
+create_account_dtos(LastNumber) ->
+    Accounts = database:get_accounts_larger_than(LastNumber),
+    lists:map(fun build_account_dto/1, Accounts).
+
+build_account_dto(Account) ->
+    Person = database:get_person_by_id(Account#account.person_id),
+    #account_dto{
+        account_number = Account#account.account_number,
+        person_id = Account#account.person_id,
+        given_name = Person#person.given_name,
+        surname = Person#person.surname,
+        amount = Account#account.amount
+    }.
+
 handle_call({subscribe, LastNumber, ClientPid}, _From, State) ->
     % Finde alle neuen Accounts, deren Nummer größer ist als LastNumber
-    NewAccounts = [A || A <- State#state.all_accounts, A#account_dto.account_number > LastNumber],
+    NewAccounts = create_account_dtos(LastNumber),
 
     % Sende Willkommensnachricht und neue Accounts
     InitialMessage = {welcome, "Subscription erfolgreich", NewAccounts},
@@ -70,15 +97,15 @@ handle_call({account_dtos, Account}, _From, State) ->
     {reply, Responses, State};
 handle_call({add_account, NewAccount}, _From, State) ->
     % Verhindere Duplikate durch Prüfung, ob der Account bereits in all_accounts vorhanden ist
-    UpdatedAccounts =
-        case lists:member(NewAccount, State#state.all_accounts) of
-            true -> State#state.all_accounts;
-            false -> [NewAccount | State#state.all_accounts]
-        end,
+    %UpdatedAccounts =
+    %    case lists:member(NewAccount, State#state.all_accounts) of
+    %        true -> State#state.all_accounts;
+    %        false -> [NewAccount | State#state.all_accounts]
+    %    end,
 
-    UpdatedState = State#state{all_accounts = UpdatedAccounts},
+    %UpdatedState = State#state{all_accounts = UpdatedAccounts},
     broadcast_internal(State#state.subscribers, NewAccount),
-    {reply, {ok, NewAccount}, UpdatedState};
+    {reply, {ok, NewAccount}};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
