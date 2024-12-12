@@ -8,11 +8,12 @@ Subscribe: handle_call({subscribe, LastAccountNumber:number(), ClientPid})
 
       gen_server:call(account_server, {subscribe, 42, ClientPid}).
 
+-type unique_id() :: integer().
 -record(account_dto, {
     account_number :: number(),
-	person_id :: number(),
-    given_name :: string(),
-    surname :: string()
+    person_id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary(),
     amount :: number()
 }).
 
