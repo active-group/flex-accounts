@@ -1,3 +1,26 @@
+# Schnittstelle
+Module: account_server
+Subscribe < LastAccountNumber number()
+Return: [ account_dto ] Liste of account_dto
+
+-record(account_dto, {
+    account_number :: number(),
+	person_id :: number(),
+    given_name :: string(),
+    surname :: string()
+    amount :: number()
+}).
+
+
+client_process() ->
+    receive       
+        {account_dtos, Account_Dtos} ->
+            io:format("Account_Dtos: ~p~n", [Account_Dtos])
+    end.
+
+
+
+
 # Erlbank account
 
 Erlbank Legacy System
