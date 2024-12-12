@@ -105,7 +105,8 @@ handle_call({add_account, NewAccount}, _From, State) ->
 
     %UpdatedState = State#state{all_accounts = UpdatedAccounts},
     broadcast_internal(State#state.subscribers, NewAccount),
-    {reply, {ok, NewAccount}};
+    {reply, {ok, NewAccount}, State};
+
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
