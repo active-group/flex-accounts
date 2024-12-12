@@ -131,7 +131,7 @@ broadcast_internal(Subscribers, Account) ->
     maps:fold(
         fun(Pid, _Info, Acc) ->
             try
-                Pid ! {account_dtos, Account},
+                Pid ! {account_dtos, [Account]},
                 [lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
             catch
                 _:_ ->
