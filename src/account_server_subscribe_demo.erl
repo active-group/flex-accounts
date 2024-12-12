@@ -1,52 +1,52 @@
 % Demo-Modul
 -module(account_server_subscribe_demo).
 -export([run_demo/0, client_process/0]).
-
+-type unique_id() :: integer().
 -record(account_dto, {
     account_number :: number(),
-    person_id :: number(),
-    given_name :: string(),
-    surname :: string(),
+    person_id :: unique_id(),
+    given_name :: binary(),
+    surname :: binary(),
     amount :: number()
 }).
 
 -define(ACCOUNT_1, #account_dto{
     account_number = 10,
     person_id = 1001,
-    given_name = "Alice",
-    surname = "Liddell",
+    given_name = <<"Alice">>,
+    surname = <<"Liddell">>,
     amount = 500
 }).
 
 -define(ACCOUNT_2, #account_dto{
     account_number = 11,
     person_id = 1002,
-    given_name = "Bob",
-    surname = "Marley",
+    given_name = <<"Bob">>,
+    surname = <<"Marley">>,
     amount = 700
 }).
 
 -define(ACCOUNT_3, #account_dto{
     account_number = 12,
     person_id = 1003,
-    given_name = "Carol",
-    surname = "Danvers",
+    given_name = <<"Carol">>,
+    surname = <<"Danvers">>,
     amount = 1000
 }).
 
 -define(ACCOUNT_4, #account_dto{
     account_number = 99,
     person_id = 1004,
-    given_name = "Peter",
-    surname = "Tosh",
+    given_name = <<"Peter">>,
+    surname = <<"Tosh">>,
     amount = 1000
 }).
 
 -define(ACCOUNT_5, #account_dto{
     account_number = 100,
     person_id = 1005,
-    given_name = "John",
-    surname = "Doe",
+    given_name = <<"John">>,
+    surname = <<"Doe">>,
     amount = 1000
 }).
 
