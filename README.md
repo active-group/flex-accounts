@@ -5,6 +5,9 @@ GenServer: account_server
 Subscribe: handle_call({subscribe, LastAccountNumber:number(), ClientPid})
     Return: [ account_dto ] Liste of account_dto > LastAccountNumber
 
+
+      gen_server:call(account_server, {subscribe, 42, ClientPid}).
+
 -record(account_dto, {
     account_number :: number(),
 	person_id :: number(),
