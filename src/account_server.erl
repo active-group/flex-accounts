@@ -66,7 +66,7 @@ create_account_dtos(LastNumber) ->
     lists:map(fun build_account_dto/1, Accounts).
 
 build_account_dto(Account) ->
-    Person = database:get_person_by_id(Account#account.person_id),
+    {ok, Person} = database:get_person(Account#account.person_id),
     #account_dto{
         account_number = Account#account.account_number,
         person_id = Account#account.person_id,
@@ -106,7 +106,6 @@ handle_call({add_account, NewAccount}, _From, State) ->
     %UpdatedState = State#state{all_accounts = UpdatedAccounts},
     broadcast_internal(State#state.subscribers, NewAccount),
     {reply, {ok, NewAccount}, State};
-
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
