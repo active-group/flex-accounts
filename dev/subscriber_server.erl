@@ -4,7 +4,7 @@
 -export([
     start_link/0,
     subscribe/2,
-    broadcast/2,
+    broadcast/1,
     add_account/1
 ]).
 
@@ -30,7 +30,7 @@ start_link() ->
 subscribe(LastAccountNumber, ClientPid) ->
     gen_server:call(?MODULE, {subscribe, LastAccountNumber, ClientPid}).
 
-broadcast(Message, _Pid) ->
+broadcast(Message) ->
     gen_server:call(?MODULE, {broadcast, Message}).
 
 add_account(NewAccount) ->
