@@ -71,4 +71,4 @@ run_demo() ->
     % Broadcast
     % Erwartet wird eine Liste von Ergebnissen, etwa [{Pid1, ok}, {Pid2, ok}, ...]:
     BroadcastResults = account_server:broadcast({account_dtos, ?ACCOUNT_4}),
-    io:format("Broadcast: Broadcast-DIRECT Results (List): ~p~n", [BroadcastResults]).
+    io:format("Broadcast: Broadcast-DIRECT Results received (List): ~p~n", [BroadcastResults]).

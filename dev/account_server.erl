@@ -34,12 +34,13 @@
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+%{debug, [trace]}
 
 subscribe(LastAccount, ClientPid) ->
     gen_server:call(?MODULE, {subscribe, LastAccount, ClientPid}).
 
 broadcast(Message) ->
-    gen_server:call(?MODULE, {broadcast, Message}).
+    gen_server:call(?MODULE, {account_dtos, Message}).
 
 add_account(NewAccount) ->
     gen_server:call(?MODULE, {add_account, NewAccount}).
@@ -64,13 +65,13 @@ handle_call({subscribe, LastNumber, ClientPid}, _From, State) ->
     },
 
     {reply, NewAccounts, UpdatedState};
-handle_call({broadcast, Account}, _From, State) ->
+handle_call({account_dtos, Account}, _From, State) ->
     % Sende an alle Subscriber
     Responses = maps:fold(
         fun(Pid, _Info, Acc) ->
             try
-                Pid ! {broadcast, Account},
-                [lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
+                Pid ! {account_dtos, Account}
+                %[lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
             catch
                 _:_ ->
                     [lists:flatten(io_lib:format("Fehler beim Senden an ~p", [Pid])) | Acc]
