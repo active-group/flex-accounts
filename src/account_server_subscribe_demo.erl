@@ -62,8 +62,6 @@ client_process() ->
     end.
 
 run_demo() ->
-    % Server starten
-    account_server:start_link(),
 
     % Accounts hinzufügen (nun als Records)
     account_server:add_account(?ACCOUNT_1),

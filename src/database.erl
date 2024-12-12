@@ -56,6 +56,7 @@ init_database() ->
     close_tables(),
     destroy_tables(),
     create_tables(),
+    account_server:start_link(),
     ok.
 
 write(Table, Tuple) ->
