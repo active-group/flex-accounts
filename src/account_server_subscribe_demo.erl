@@ -42,13 +42,23 @@
     amount = 1000
 }).
 
+-define(ACCOUNT_5, #account_dto{
+    account_number = 100,
+    person_id = 1005,
+    given_name = "John",
+    surname = "Doe",
+    amount = 1000
+}).
+
 client_process() ->
     receive
         {welcome, Message, NewAccounts} ->
             io:format("receive: Welcome: ~p~n", [Message]),
-            io:format("receive: Welcome : New Accounts (List): ~p~n", [NewAccounts]);
+            io:format("receive: Welcome : New Accounts (List): ~p~n", [NewAccounts]),
+            client_process();
         {account_dtos, Account} ->
-            io:format("receive: Broadcast-Results (List): ~p~n", [Account])
+            io:format("receive: Broadcast-Results (List): ~p~n", [Account]),
+            client_process()
     end.
 
 run_demo() ->
@@ -70,5 +80,8 @@ run_demo() ->
 
     % Broadcast
     % Erwartet wird eine Liste von Ergebnissen, etwa [{Pid1, ok}, {Pid2, ok}, ...]:
-    BroadcastResults = account_server:broadcast({account_dtos, ?ACCOUNT_4}),
-    io:format("Broadcast: Broadcast-DIRECT Results received (List): ~p~n", [BroadcastResults]).
+    %BroadcastResults = account_server:broadcast({account_dtos, ?ACCOUNT_4}),
+    %io:format("Broadcast: Broadcast-DIRECT Results received (List): ~p~n", [BroadcastResults]).
+
+    account_server:add_account(?ACCOUNT_4),
+    account_server:add_account(?ACCOUNT_5).

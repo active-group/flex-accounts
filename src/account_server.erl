@@ -39,8 +39,8 @@ start_link() ->
 subscribe(LastAccount, ClientPid) ->
     gen_server:call(?MODULE, {subscribe, LastAccount, ClientPid}).
 
-broadcast(Message) ->
-    gen_server:call(?MODULE, {account_dtos, Message}).
+broadcast(Account) ->
+    gen_server:call(?MODULE, {account_dtos, Account}).
 
 add_account(NewAccount) ->
     gen_server:call(?MODULE, {add_account, NewAccount}).
@@ -66,21 +66,7 @@ handle_call({subscribe, LastNumber, ClientPid}, _From, State) ->
 
     {reply, NewAccounts, UpdatedState};
 handle_call({account_dtos, Account}, _From, State) ->
-    % Sende an alle Subscriber
-    Responses = maps:fold(
-        fun(Pid, _Info, Acc) ->
-            try
-                Pid ! {account_dtos, Account}
-                %[lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
-            catch
-                _:_ ->
-                    [lists:flatten(io_lib:format("Fehler beim Senden an ~p", [Pid])) | Acc]
-            end
-        end,
-        [],
-        State#state.subscribers
-    ),
-
+    Responses = broadcast_internal(State#state.subscribers, Account),
     {reply, Responses, State};
 handle_call({add_account, NewAccount}, _From, State) ->
     % Verhindere Duplikate durch Prüfung, ob der Account bereits in all_accounts vorhanden ist
@@ -91,7 +77,8 @@ handle_call({add_account, NewAccount}, _From, State) ->
         end,
 
     UpdatedState = State#state{all_accounts = UpdatedAccounts},
-    {reply, ok, UpdatedState};
+    broadcast_internal(State#state.subscribers, NewAccount),
+    {reply, {ok, NewAccount}, UpdatedState};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -112,3 +99,18 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+broadcast_internal(Subscribers, Account) ->
+    maps:fold(
+        fun(Pid, _Info, Acc) ->
+            try
+                Pid ! {account_dtos, Account},
+                [lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
+            catch
+                _:_ ->
+                    [lists:flatten(io_lib:format("Fehler beim Senden an ~p", [Pid])) | Acc]
+            end
+        end,
+        [],
+        Subscribers
+    ).
