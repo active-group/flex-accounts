@@ -29,7 +29,8 @@
     get_all_persons/0,
     unique_account_number/0,
     unique_person_id/0,
-    atomically/1
+    atomically/1,
+    get_accounts_larger_then/1
 ]).
 
 close_tables() ->
@@ -90,6 +91,11 @@ get_account(AccountNumber) ->
 
 -spec get_all_accounts() -> list(#account{}).
 get_all_accounts() -> read_all(account, fun deserialize_account/1).
+
+-spec get_accounts_larger_than(number()) -> list(#account{}).
+get_accounts_larger_than(LargerThan) -> 
+   All =  read_all(account, fun deserialize_account/1),
+   lists:filter(fun(A) -> A#account.account_number > LargerThan end, All).
 
 -spec put_person(#person{}) -> ok.
 put_person(#person{id = Id, given_name = GivenName, surname = Surname}) ->
