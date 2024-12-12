@@ -1,4 +1,4 @@
--module(subscriber_server).
+-module(account_server).
 -behavior(gen_server).
 
 -export([
@@ -17,18 +17,26 @@
     code_change/3
 ]).
 
+-record(account_dto, {
+    account_number :: number(),
+    person_id :: number(),
+    given_name :: string(),
+    surname :: string(),
+    amount :: number()
+}).
+
 -record(state, {
     % Map von Pid zu Subscription-Infos
     subscribers = #{},
-    % Gesamtliste aller Accounts
+    % Gesamtliste aller Accounts (Liste von #account_dto{})
     all_accounts = []
 }).
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-subscribe(LastAccountNumber, ClientPid) ->
-    gen_server:call(?MODULE, {subscribe, LastAccountNumber, ClientPid}).
+subscribe(LastAccount, ClientPid) ->
+    gen_server:call(?MODULE, {subscribe, LastAccount, ClientPid}).
 
 broadcast(Message) ->
     gen_server:call(?MODULE, {broadcast, Message}).
@@ -39,33 +47,29 @@ add_account(NewAccount) ->
 init([]) ->
     {ok, #state{}}.
 
-handle_call({subscribe, LastAccountNumber, ClientPid}, _From, State) ->
-    % Monitor für den Client erstellen
-    MonitorRef = erlang:monitor(process, ClientPid),
+handle_call({subscribe, LastNumber, ClientPid}, _From, State) ->
+    % Finde alle neuen Accounts, deren Nummer größer ist als LastNumber
+    NewAccounts = [A || A <- State#state.all_accounts, A#account_dto.account_number > LastNumber],
 
-    % Finde Accounts nach der LastAccountNumber
-    NewAccountsSinceLastNumber =
-        lists:dropwhile(
-            fun(Account) -> Account =/= LastAccountNumber end, State#state.all_accounts
-        ),
-    NewAccounts = tl(NewAccountsSinceLastNumber),
-
-    % Sende Willkommensnachricht
+    % Sende Willkommensnachricht und neue Accounts
     InitialMessage = {welcome, "Subscription erfolgreich", NewAccounts},
     ClientPid ! InitialMessage,
 
-    % Aktualisiere Subscribers
+    % Monitor für den Client erstellen, um bei Abbruch informiert zu werden
+    MonitorRef = erlang:monitor(process, ClientPid),
+
+    % Subscriber speichern
     UpdatedState = State#state{
         subscribers = maps:put(ClientPid, #{monitor => MonitorRef}, State#state.subscribers)
     },
 
     {reply, NewAccounts, UpdatedState};
-handle_call({broadcast, Message}, _From, State) ->
+handle_call({broadcast, Account}, _From, State) ->
     % Sende an alle Subscriber
     Responses = maps:fold(
-        fun(Pid, _, Acc) ->
+        fun(Pid, _Info, Acc) ->
             try
-                Pid ! {broadcast, Message},
+                Pid ! {broadcast, Account},
                 [lists:flatten(io_lib:format("Nachricht an ~p gesendet", [Pid])) | Acc]
             catch
                 _:_ ->
@@ -78,7 +82,7 @@ handle_call({broadcast, Message}, _From, State) ->
 
     {reply, Responses, State};
 handle_call({add_account, NewAccount}, _From, State) ->
-    % Verhindere Duplikate
+    % Verhindere Duplikate durch Prüfung, ob der Account bereits in all_accounts vorhanden ist
     UpdatedAccounts =
         case lists:member(NewAccount, State#state.all_accounts) of
             true -> State#state.all_accounts;
@@ -90,8 +94,8 @@ handle_call({add_account, NewAccount}, _From, State) ->
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
-handle_info({'DOWN', MonitorRef, process, Pid, _Reason}, State) ->
-    % Entferne disconnecteten Client
+handle_info({'DOWN', _MonitorRef, process, Pid, _Reason}, State) ->
+    % Entferne disconnected Client aus subscribers
     UpdatedState = State#state{
         subscribers = maps:remove(Pid, State#state.subscribers)
     },

@@ -1,7 +1,9 @@
 # Schnittstelle
 Module: account_server
-Subscribe < LastAccountNumber number()
-Return: [ account_dto ] Liste of account_dto
+GenServer: account_server
+
+Subscribe: handle_call({subscribe, LastAccountNumber:number(), ClientPid})
+    Return: [ account_dto ] Liste of account_dto
 
 -record(account_dto, {
     account_number :: number(),
@@ -58,7 +60,7 @@ $ rebar3 shell
 You can set a short name via:
 
 ```
-$ rebar3 shell --sname=account
+$ rebar3 shell --sname=accounts
 ```
 
 The web-frontend is served at http://localhost:8000/
