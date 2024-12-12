@@ -3,7 +3,7 @@ Module: account_server
 GenServer: account_server
 
 Subscribe: handle_call({subscribe, LastAccountNumber:number(), ClientPid})
-    Return: [ account_dto ] Liste of account_dto
+    Return: [ account_dto ] Liste of account_dto > LastAccountNumber
 
 -record(account_dto, {
     account_number :: number(),
