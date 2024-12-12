@@ -30,7 +30,7 @@
     unique_account_number/0,
     unique_person_id/0,
     atomically/1,
-    get_accounts_larger_then/1
+    get_accounts_larger_than/1
 ]).
 
 close_tables() ->
