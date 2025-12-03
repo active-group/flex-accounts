@@ -25,6 +25,7 @@ make_person(GivenName, Surname) ->
                    given_name = GivenName,
                    surname = Surname},
     database:put_person(Person),
+    trigger_person_created_event(Person),
     Person.
 
 -spec get_person(unique_id()) -> {ok, #person{} | {error, any()}}.
@@ -37,4 +38,13 @@ make_account(Person) ->
                    person_id = Person#person.id,
                    amount = 1000},
     database:put_account(Account),
+    trigger_account_created_event(Account),
     Account.
+
+-spec trigger_account_created_event(#account{}) -> {}.
+trigger_account_created_event(#account{account_number = AccountId, person_id = PersonId}) ->
+  gen_server:cast(event_sender, #account_creation_event{account_number = AccountId, person_id = PersonId}).
+
+-spec trigger_person_created_event(#person{}) -> {}.
+trigger_person_created_event(#person{id = PersonId, given_name = Name, surname = Surname}) ->
+  gen_server:cast(event_sender, #person_creation_event{id = PersonId, given_name = Name, surname = Surname}).

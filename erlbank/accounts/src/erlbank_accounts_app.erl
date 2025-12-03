@@ -25,6 +25,8 @@ start_cowboy() ->
 start(_StartType, _StartArgs) ->
     database:init_database(),
     start_cowboy(),
+    {Ok, Pid} = events_server:start(),
+    register(event_sender, Pid),
     erlbank_accounts_sup:start_link().
 
 stop(_State) ->

@@ -1,5 +1,5 @@
 -module(events_server).
--export([init/1, start/0]).
+-export([init/1, start/0, handle_cast/2, handle_call/3]).
 -include("data.hrl").
 -include("events.hrl").
 
@@ -9,7 +9,7 @@
 -type registered_pids() :: sets:set(pid()).
 -type event() :: #person_creation_event{} | #account_creation_event{} | #transfer_creation_event{}.
 
-start() ->
+start() -> %gibt {ok, pid} zurück
   gen_server:start(?MODULE, sets:new(), [{debug, [trace]}]).
 
 -spec init(registered_pids()) -> {ok, registered_pids()}.
@@ -41,7 +41,8 @@ handle_cast(Event, Pids) ->
 
 
 -spec send_event_to_pids(event(), list(pid())) -> {any()}.
-send_event_to_pids(Event, []) -> {ok};
+send_event_to_pids(_Event, []) -> {ok};
 send_event_to_pids(Event, [First | Rest]) ->
   send_event(Event, First),
   send_event_to_pids(Event, Rest).
+
