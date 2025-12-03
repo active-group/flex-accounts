@@ -17,7 +17,7 @@ init(Pids) ->
   {ok, Pids}.
 
 -spec handle_call(#register{}, pid(), registered_pids()) -> {reply, any(), registered_pids()}.
-handle_call(#register{}, Pid, Registered_Pids) ->
+handle_call(#register{}, {Pid, _}, Registered_Pids) ->
   New_Pids = sets:add_element(Pid, Registered_Pids),
   {reply, ok, New_Pids}.
 
@@ -35,7 +35,8 @@ call(Pid, Request) ->
 % wird aus der business_logic aufgerufen
 -spec handle_cast(event(), registered_pids()) -> {noreply, registered_pids()}.
 handle_cast(Event, Pids) ->
-  send_event_to_pids(Event, sets:to_list(Pids)).
+  send_event_to_pids(Event, sets:to_list(Pids)),
+  {noreply, Pids}.
   %durch alle Pids gehen
   % event schicken
 
