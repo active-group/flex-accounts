@@ -1,2 +1,2 @@
 -record(event, {number :: non_neg_integer(), payload :: term()}).
--record(register, {}).
+-record(register, {pid :: pid()}).

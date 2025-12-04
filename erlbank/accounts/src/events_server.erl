@@ -17,7 +17,7 @@ init(Pids) ->
   {ok, Pids}.
 
 -spec handle_call(#register{}, pid(), registered_pids()) -> {reply, any(), registered_pids()}.
-handle_call(#register{}, {Pid, _}, Registered_Pids) ->
+handle_call(#register{pid = Pid}, _, Registered_Pids) ->
   New_Pids = sets:add_element(Pid, Registered_Pids),
   {reply, ok, New_Pids}.
 
