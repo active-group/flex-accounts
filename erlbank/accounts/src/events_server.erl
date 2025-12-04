@@ -27,10 +27,22 @@ send_event(Event, Pid) ->
 
 
 call(Pid, Request) ->
-  case gen_server:call(Pid, Request) of
-    ok -> ok;
-    _ -> call(Pid, Request)
+  spawn(fun() -> call_loop(Pid, Request) end).
+
+call_loop(Pid, Request) ->
+  try
+    case gen_server:call(Pid, Request) of
+      ok -> ok;
+      _ ->
+        timer:sleep(1000),
+        call_loop(Pid, Request)
+    end
+  catch
+    exit:{noproc,_} ->
+      timer:sleep(1000),
+      call_loop(Pid, Request)
   end.
+
 
 % wird aus der business_logic aufgerufen
 -spec handle_cast(event(), registered_pids()) -> {noreply, registered_pids()}.
